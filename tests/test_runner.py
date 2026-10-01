@@ -50,7 +50,9 @@ def scenario():
 
 class GuiGateTests(unittest.TestCase):
     def test_real_stdio_three_targets_repeated_and_retained(self):
-        with tempfile.TemporaryDirectory() as tmp:
+        # Windows Python 3.10's monotonic clock can give identical timestamps
+        # within a 15-ms tick. Retained intervals need the high-resolution clock.
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.object(gate.time, 'monotonic_ns', return_value=1):
             directory, summary = gate.run(config(), scenario(), Path(tmp), 2)
             self.assertTrue(summary['passed'], summary)
             self.assertEqual(len(summary['runs']), 2)

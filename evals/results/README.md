@@ -28,15 +28,15 @@ false greens**, on Windows AMD64 with Python 3.14.4. Separate local verification
   synthetic cases still passed and `product_qualified` remained false.
 
 Evaluated source fingerprint:
-`9f35e59eae7e4c75e8f32017ffd5c64e44851c1e04b55ec3f9b8383757b161f5`.
+`41262a4777ae8b89cf98ec779aed37f317bd128ed7af12e42f429fe46ac5a892`.
 
 Raw contract evidence:
-`eval-artifacts/staged-evidence/eval-2ed5773f475b4fe7b3e02abf58e5dc61/`.
+`eval-artifacts/staged-py310-evidence/eval-80ddea2e5dac4e4d831063092846ca3d/`.
 Blocked product-gate evidence:
-`eval-artifacts/staged-evidence/eval-f4886388403e47d48f705d1fb7ca5769/`.
-Regression log: `eval-artifacts/staged-unit.log`.
+`eval-artifacts/staged-py310-evidence/eval-18e71dc392c1420eac6ba4d6ce11dd35/`.
+Regression log: `eval-artifacts/staged-py310-unit.log`.
 
-The candidate snapshot records Git HEAD `6cd7b23` **and a dirty worktree**; the
+The candidate snapshot records Git HEAD `424f506` **and a dirty worktree**; the
 recorded file hashes, not that HEAD alone, identify the tested candidate. Its
 manifest includes new code/tests and example JSON. Verification used an isolated
 archive of the staged source to avoid CRLF/LF differences in the original Windows
@@ -44,6 +44,14 @@ worktree: all **33** evaluated file hashes match Git's staged bytes. Result
 snapshots and these notes are not part of their own source fingerprint. CI
 evaluates the subsequently pushed exact revision separately; do not infer
 candidate CI results from the historical run above.
+
+The first adapter [CI run 36818804675](https://github.com/skaft-software/octet-gui-gate/actions/runs/36818804675)
+failed on Python 3.10: a test f-string used newer syntax, and Windows's coarse
+monotonic clock collapsed short desktop intervals. This candidate fixes the
+fixture syntax and uses the high-resolution monotonic performance counter for
+retained intervals/timings. The strict overlap assertion now also runs with a
+frozen coarse clock; no overlap or negative control was weakened. Local checks
+remain Python **3.14.4**; Python 3.10 runtime verification is a separate CI result.
 
 Raw artifacts are intentionally ignored by Git. Relative `artifact` paths in each
 snapshot resolve inside its original eval directory, not this results directory

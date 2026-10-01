@@ -286,7 +286,10 @@ class OracleIntegrationTests(unittest.TestCase):
                     target['reset'] = [sys.executable, '-c', f'from gui_gate.native_probe import publish; from pathlib import Path; publish(Path({str(path)!r}), "", 0)']
                     target['oracles'] = {'app': [sys.executable, '-m', 'gui_gate.native_probe', 'oracle', '--state', str(path)]}
                     from test_runner import MCP
-                    program = MCP.replace("else: result =", f"else:\n        {'from gui_gate.native_probe import publish; from pathlib import Path; publish(Path(' + repr(str(path)) + '), request[\"params\"][\"arguments\"].get(\"value\", \"\"), 1)' if mutate else 'pass'}\n        result =")
+                    action = ('from gui_gate.native_probe import publish; from pathlib import Path; '
+                              f'publish(Path({str(path)!r}), request["params"]["arguments"].get("value", ""), 1)'
+                              if mutate else 'pass')
+                    program = MCP.replace("else: result =", f"else:\n        {action}\n        result =")
                     target['mcp'] = [sys.executable, '-u', '-c', program]
                 task = {'version': 1, 'steps': [
                     {'id': 'before', 'oracle': 'app', 'assert': [{'path': '/structuredContent/text', 'op': 'equals', 'value': ''}]},

@@ -107,7 +107,9 @@ Adapter responsibilities:
 The harness runs three workers, one per OS; repetitions on a guest are serial.
 A readiness barrier precedes scenario dispatch; a wave that cannot synchronize
 all three authorized desktops cannot be green, though independent authorized
-targets still finish their evidence. Desktop-ready/finished intervals are retained.
+targets still finish their evidence. Timings and desktop-ready/finished intervals
+use the high-resolution monotonic `perf_counter` clock, including on Windows
+Python 3.10; coarse clock ticks cannot stand in for observed interval boundaries.
 It rejects repeated resource names but cannot detect two names aliasing the
 same VM. Cross-process leasing belongs to the adapter. A failed cleanup stops
 further repetitions. Hook timeouts kill the direct child, not every descendant:

@@ -23,6 +23,7 @@ import uuid
 
 from .driver_client import DriverClient
 
+# perf_counter is monotonic and high-resolution, including Windows Python 3.10.
 TARGETS = ("macos", "windows", "linux")
 
 
@@ -173,7 +174,7 @@ def save(path, value):
 def hook(command, directory, phase, timeout, owner=None, input_payload=None):
     # Files retain diagnostics and avoid buffering arbitrary hook output in RAM.
     with (directory / f"{phase}.stdout").open("wb") as out, (directory / f"{phase}.stderr").open("wb") as err:
-        started = time.monotonic()
+        started = time.perf_counter()
         environment = os.environ.copy()
         if owner is not None:
             environment['OCTET_GUI_GATE_OWNER'] = owner
@@ -181,7 +182,7 @@ def hook(command, directory, phase, timeout, owner=None, input_payload=None):
                                 timeout=timeout, check=False, env=environment)
     if result.returncode:
         raise RuntimeError(f"{phase} exited {result.returncode}")
-    return time.monotonic() - started
+    return time.perf_counter() - started
 
 
 def check_cancelled(cancel_file):
@@ -193,8 +194,8 @@ def run_target(name, target, scenario, directory, timeout, cancel_file=None, des
     directory.mkdir(mode=0o700)
     owner = uuid.uuid4().hex
     report = {"target": name, "resource": target["resource"], "lease_owner": owner, "passed": False,
-              "steps": [], "timings_seconds": {}, "started_monotonic_ns": time.monotonic_ns()}
-    started = time.monotonic()
+              "steps": [], "timings_seconds": {}, "started_monotonic_ns": time.perf_counter_ns()}
+    started = time.perf_counter()
     client = None
     try:
         check_cancelled(cancel_file)
@@ -210,14 +211,14 @@ def run_target(name, target, scenario, directory, timeout, cancel_file=None, des
         report["guest"] = proof
         check_cancelled(cancel_file)
         client = DriverClient("unused", transport_command=target["mcp"], environment=target.get("environment", {}))
-        connect = time.monotonic()
+        connect = time.perf_counter()
         client.start(timeout=timeout)
-        report["timings_seconds"]["connect"] = time.monotonic() - connect
+        report["timings_seconds"]["connect"] = time.perf_counter() - connect
         tools = {t.name for t in client.tools()}
         missing = {step['tool'] for step in scenario['steps'] if 'tool' in step} - tools
         if missing:
             raise RuntimeError(f"guest lacks scenario tools: {sorted(missing)}")
-        report['desktop_ready_monotonic_ns'] = time.monotonic_ns()
+        report['desktop_ready_monotonic_ns'] = time.perf_counter_ns()
         if desktop_barrier is not None:
             try:
                 desktop_barrier.wait(timeout=timeout)
@@ -233,9 +234,9 @@ def run_target(name, target, scenario, directory, timeout, cancel_file=None, des
             check_cancelled(cancel_file)
             kind = 'tool' if 'tool' in step else 'oracle'
             entry = {"id": step["id"], kind: step[kind], "passed": False,
-                     "started_monotonic_ns": time.monotonic_ns()}
+                     "started_monotonic_ns": time.perf_counter_ns()}
             report["steps"].append(entry)
-            step_start = time.monotonic()
+            step_start = time.perf_counter()
             arguments = resolve(step.get("arguments", {}), context)
             if kind == 'tool':
                 result = client.call(step['tool'], arguments, timeout=timeout)
@@ -250,15 +251,15 @@ def run_target(name, target, scenario, directory, timeout, cancel_file=None, des
             save(directory / evidence, {"arguments": arguments, "result": result})
             entry["evidence"] = evidence
             entry["sha256"] = hashlib.sha256((directory / evidence).read_bytes()).hexdigest()
-            entry["seconds"] = time.monotonic() - step_start
-            entry['finished_monotonic_ns'] = time.monotonic_ns()
+            entry["seconds"] = time.perf_counter() - step_start
+            entry['finished_monotonic_ns'] = time.perf_counter_ns()
             if result.get("isError") or result.get("is_error"):
                 raise RuntimeError(f'{kind} failed: {step[kind]}')
             for check in step.get("assert", []):
                 assert_evidence(check, result, context)
             context["results"][step["id"]] = result
             entry["passed"] = True
-        report['desktop_finished_monotonic_ns'] = time.monotonic_ns()
+        report['desktop_finished_monotonic_ns'] = time.perf_counter_ns()
         report["passed"] = True
     except Exception as error:
         report["error"] = f"{type(error).__name__}: {error}"
@@ -276,8 +277,8 @@ def run_target(name, target, scenario, directory, timeout, cancel_file=None, des
         except Exception as error:
             report["passed"] = False
             report["cleanup_error"] = str(error)
-        report["timings_seconds"]["total"] = time.monotonic() - started
-        report["finished_monotonic_ns"] = time.monotonic_ns()
+        report["timings_seconds"]["total"] = time.perf_counter() - started
+        report["finished_monotonic_ns"] = time.perf_counter_ns()
         save(directory / "report.json", report)
     return report
 
@@ -286,7 +287,7 @@ def run(config, scenario, output, repetitions, cancel_file=None):
     validate(config, scenario)
     if type(repetitions) is not int or repetitions < 1:
         raise ValueError("repetitions must be positive")
-    campaign_started = time.monotonic()
+    campaign_started = time.perf_counter()
     campaign = output / (time.strftime("%Y%m%dT%H%M%S") + "-" + uuid.uuid4().hex)
     campaign.mkdir(parents=True, mode=0o700)
     save(campaign / "config.json", config)
@@ -320,7 +321,7 @@ def run(config, scenario, output, repetitions, cancel_file=None):
             # A failed cleanup leaves ownership uncertain: do not reset again.
             if any("cleanup_error" in r or "close_error" in r for r in reports):
                 break
-    summary['campaign_seconds'] = time.monotonic() - campaign_started
+    summary['campaign_seconds'] = time.perf_counter() - campaign_started
     save(campaign / 'summary.json', summary)
     return campaign, summary
 

@@ -10,7 +10,7 @@
     "gui_gate/guest_probe.py": "8bdb62acc72f09438f11d4f3fa8ca858a5cfeb6db250e698966e55bb792ced3d",
     "gui_gate/job.py": "35c3711e5fce9ba963242680919822e2dfc5ae1fc665a317e2515e37028b9f32",
     "gui_gate/native_probe.py": "f02a1ff5dcc4f9fd9419d620098fac7f2bac79e97c7b4291687db94c5fcbf5d9",
-    "gui_gate/runner.py": "b2ed08349dd5f5a1b534fbe9f9ba645c1f31e940856f62cf562187dc5cde1a1f",
+    "gui_gate/runner.py": "f49dfbcd5aa8f077dbf38b524566e90a3c202790138d0ef17986e752de84c510",
     "gui_gate/utm.py": "d31b341f2bec541135dcbce5447da2794110e095ba7f41b4e766f05f963a5f0b",
     "evals/__init__.py": "e58b3641c546385133376b207d23d623a5c259e1163351a606391ece16e11529",
     "evals/boundaries.py": "d9473b1bb4e3ad8f80910843e812015499f9ec8453b3542facb2e2df95856a26",
@@ -21,8 +21,8 @@
     "tests/test_client.py": "f0a6e11a917cc7e0862498b9aac0a9ff1319c64b6d9680418d227599b096898c",
     "tests/test_evaluation.py": "56879631bbfa685a2785614debf7ce8d7bd7dc3afefdffbae39c836d98633a1a",
     "tests/test_extension.py": "2d069c85e29495d96a233786a06e8577ca505ee7aaf267c74f7d8f3730593bed",
-    "tests/test_probe.py": "39b355977abf7aa9381a0df9582e9622822380199e08dac6d9e8994f0a76f416",
-    "tests/test_runner.py": "28fa21be296170349a3bbc14ea2317e514c3e6ca64e9b1f109a74becdd8a426d",
+    "tests/test_probe.py": "5cf18d7cdc2e020460714ad766b342cd8639a80542f50ef7774ef3e2a0b23f84",
+    "tests/test_runner.py": "31435cd65f61ca2dc93881d3bec869ec39040cf151b142ddbb68e17aa08c9ddb",
     "tests/test_utm.py": "acf12a318b8714f2fa4113cacde8f4e50ca6e2efc83425a42c0e7ee12c523de2",
     "vendor/octet_extension/__init__.py": "0ebf52828042e6acc2d632433284e690f0ac071759de37b7f5dab203f00ecfdd",
     "vendor/octet_extension/api_v03.py": "c55f25f312ab1ebdc21ad95f245754988696786a6871295eeb5d39903f227220",
@@ -36,8 +36,8 @@
     "evals/cases.json": "09f63f287311cdfaef8cf333280fb5d3a7f3b1500d4819886216569f89121847",
     ".github/workflows/tests.yml": "4ce6cbf973c0ffa6f1ddb47ba2ea9ec8e33aab28a1f63210ac32e90b08853b05"
   },
-  "evaluated_tree_sha256": "9f35e59eae7e4c75e8f32017ffd5c64e44851c1e04b55ec3f9b8383757b161f5",
-  "evaluated_at_utc": "2026-10-01T05:09:43.362668+00:00",
+  "evaluated_tree_sha256": "41262a4777ae8b89cf98ec779aed37f317bd128ed7af12e42f429fe46ac5a892",
+  "evaluated_at_utc": "2026-10-01T05:21:58.540501+00:00",
   "host": {
     "os": "Windows",
     "architecture": "AMD64",
@@ -2337,30 +2337,30 @@
         }
       ],
       "passed": true,
-      "artifact": "repeatable-golden-loop-windows\\evidence\\20261001T010943-9ff3600656a94d2780dcd1083a6e27bc",
+      "artifact": "repeatable-golden-loop-windows\\evidence\\20261001T012158-f7f72b867b8446dda655d47b1092bdb7",
       "run_seconds": [
-        0.1690997999976389,
-        0.15225980000104755,
-        0.15168910002103075,
-        0.15512399998260662,
-        0.14307310001458973,
-        0.1525021999841556,
-        0.14560879999771714,
-        0.14360889996169135,
-        0.15522539999801666,
-        0.14538349997019395,
-        0.16100780002307147,
-        0.14567289996193722,
-        0.14495039999019355,
-        0.15513570001348853,
-        0.14697020000312477,
-        0.15887929999735206,
-        0.14324070001021028,
-        0.14436979999300092,
-        0.1613861999940127,
-        0.1520689000026323
+        0.16765049996320158,
+        0.15681679995032027,
+        0.16694500000448897,
+        0.1543583999737166,
+        0.155183200025931,
+        0.16842890001134947,
+        0.15595939999911934,
+        0.15468120004516095,
+        0.1699901000247337,
+        0.15143349999561906,
+        0.15114739997079596,
+        0.1613264000043273,
+        0.1519548000069335,
+        0.14870880002854392,
+        0.1620841000112705,
+        0.15091909997863695,
+        0.15865369996754453,
+        0.16711919999215752,
+        0.1577273000148125,
+        0.1551344000035897
       ],
-      "seconds": 3.5039422000409104
+      "seconds": 3.6048948999959975
     },
     {
       "id": "three-process-overlap:all",
@@ -2521,11 +2521,11 @@
         }
       ],
       "passed": true,
-      "artifact": "three-process-overlap-all\\evidence\\20261001T010946-2a7144a1a81845cfaba3d2b6ad52e2ae",
+      "artifact": "three-process-overlap-all\\evidence\\20261001T012202-b743edd39992488f9884d71fe126abd9",
       "run_seconds": [
-        0.1832630999851972
+        0.18781170004513115
       ],
-      "seconds": 0.23235479998402297
+      "seconds": 0.23126670002238825
     },
     {
       "id": "changed-permission-identity:macos",
@@ -2650,11 +2650,11 @@
         }
       ],
       "passed": true,
-      "artifact": "changed-permission-identity-macos\\evidence\\20261001T010947-18194fc85b9046df8c1f57f90e4ef8f7",
+      "artifact": "changed-permission-identity-macos\\evidence\\20261001T012202-4aefa42985a747459ecbe1034dbc70e7",
       "run_seconds": [
-        0.1625857999897562
+        0.16387599997688085
       ],
-      "seconds": 0.2134498999803327
+      "seconds": 0.2093198000220582
     },
     {
       "id": "changed-permission-identity:windows",
@@ -2779,11 +2779,11 @@
         }
       ],
       "passed": true,
-      "artifact": "changed-permission-identity-windows\\evidence\\20261001T010947-266cfca9defc402193e64951f5f4e58b",
+      "artifact": "changed-permission-identity-windows\\evidence\\20261001T012202-aedfa7d2a28f422b940c9762e79d5aed",
       "run_seconds": [
-        0.16582220001146197
+        0.16284529998665676
       ],
-      "seconds": 0.2147525000036694
+      "seconds": 0.2061223000055179
     },
     {
       "id": "changed-permission-identity:linux",
@@ -2908,11 +2908,11 @@
         }
       ],
       "passed": true,
-      "artifact": "changed-permission-identity-linux\\evidence\\20261001T010947-d9ebb6488c8443d3a8a02a5609d85287",
+      "artifact": "changed-permission-identity-linux\\evidence\\20261001T012202-2f8bf88556bc4e87bae6b2183f2d6d11",
       "run_seconds": [
-        0.1743700999650173
+        0.16252650000387803
       ],
-      "seconds": 0.2208297000033781
+      "seconds": 0.20463639998342842
     },
     {
       "id": "boolean-is-not-numeric-identity:windows",
@@ -3037,11 +3037,11 @@
         }
       ],
       "passed": true,
-      "artifact": "boolean-is-not-numeric-identity-windows\\evidence\\20261001T010947-7b89291436d34629858e4603dc7b9812",
+      "artifact": "boolean-is-not-numeric-identity-windows\\evidence\\20261001T012203-ceabee628d744a578cfdc45e8504cdb2",
       "run_seconds": [
-        0.15734050003811717
+        0.16723819996695966
       ],
-      "seconds": 0.20561470004031435
+      "seconds": 0.20609229995170608
     },
     {
       "id": "owner-denied-permissions:macos",
@@ -3166,11 +3166,11 @@
         }
       ],
       "passed": true,
-      "artifact": "owner-denied-permissions-macos\\evidence\\20261001T010948-8c35da2ee5bb4d449bd58a2ce90c6814",
+      "artifact": "owner-denied-permissions-macos\\evidence\\20261001T012203-b8aabcd92a444dcc8b752a63c1458df2",
       "run_seconds": [
-        0.16025050001917407
+        0.17046619998291135
       ],
-      "seconds": 0.2046581999748014
+      "seconds": 0.2106868999544531
     },
     {
       "id": "owner-denied-permissions:windows",
@@ -3295,11 +3295,11 @@
         }
       ],
       "passed": true,
-      "artifact": "owner-denied-permissions-windows\\evidence\\20261001T010948-c0bccaeaedec4fe9b0cce508e788fa60",
+      "artifact": "owner-denied-permissions-windows\\evidence\\20261001T012203-25feb34dcebf4661b644dba54d0eec3b",
       "run_seconds": [
-        0.17441939999116585
+        0.16353159997379407
       ],
-      "seconds": 0.21996969997417182
+      "seconds": 0.20654990000184625
     },
     {
       "id": "owner-denied-permissions:linux",
@@ -3424,11 +3424,11 @@
         }
       ],
       "passed": true,
-      "artifact": "owner-denied-permissions-linux\\evidence\\20261001T010948-11c11094cd4d4921af72f4cb3619a78d",
+      "artifact": "owner-denied-permissions-linux\\evidence\\20261001T012203-194c257075094e018bf8311145ac117f",
       "run_seconds": [
-        0.15875419997610152
+        0.1651113000116311
       ],
-      "seconds": 0.20508119999431074
+      "seconds": 0.20612040004925802
     },
     {
       "id": "session0-not-desktop:macos",
@@ -3553,11 +3553,11 @@
         }
       ],
       "passed": true,
-      "artifact": "session0-not-desktop-macos\\evidence\\20261001T010948-87c14bbd5dd24baea72b916f38c36a3c",
+      "artifact": "session0-not-desktop-macos\\evidence\\20261001T012203-d62d1a16b28d45b1bb91326aa9457179",
       "run_seconds": [
-        0.16232820000732318
+        0.17159010004252195
       ],
-      "seconds": 0.2095905999885872
+      "seconds": 0.212946199986618
     },
     {
       "id": "session0-not-desktop:windows",
@@ -3682,11 +3682,11 @@
         }
       ],
       "passed": true,
-      "artifact": "session0-not-desktop-windows\\evidence\\20261001T010948-23ad6e979a404ca282aefdf7c7fda630",
+      "artifact": "session0-not-desktop-windows\\evidence\\20261001T012204-3bf936217d9444428782c3d90339969d",
       "run_seconds": [
-        0.16270410001743585
+        0.17135269998107105
       ],
-      "seconds": 0.21177260001422837
+      "seconds": 0.21557529998244718
     },
     {
       "id": "session0-not-desktop:linux",
@@ -3811,11 +3811,11 @@
         }
       ],
       "passed": true,
-      "artifact": "session0-not-desktop-linux\\evidence\\20261001T010949-24b7214a009a4199be8807d3912eaf9d",
+      "artifact": "session0-not-desktop-linux\\evidence\\20261001T012204-93053996646b4233a6411d7e70b7415c",
       "run_seconds": [
-        0.16270129999611527
+        0.15903789998264983
       ],
-      "seconds": 0.20858709997264668
+      "seconds": 0.20018309995066375
     },
     {
       "id": "wrong-operating-system:windows",
@@ -3940,11 +3940,11 @@
         }
       ],
       "passed": true,
-      "artifact": "wrong-operating-system-windows\\evidence\\20261001T010949-15df67c9ecb241f4bb9b5f45a7bdc9b3",
+      "artifact": "wrong-operating-system-windows\\evidence\\20261001T012204-e09e53cb8e4d46f2801785e1dd5cde3a",
       "run_seconds": [
-        0.1742573999799788
+        0.1666308999992907
       ],
-      "seconds": 0.22073760000057518
+      "seconds": 0.21014100004686043
     },
     {
       "id": "malformed-verification:macos",
@@ -4069,11 +4069,11 @@
         }
       ],
       "passed": true,
-      "artifact": "malformed-verification-macos\\evidence\\20261001T010949-441c90e24d4c4fa9842baa8dd1a11153",
+      "artifact": "malformed-verification-macos\\evidence\\20261001T012204-249c4c7e5858454d875ea52fbaf7c558",
       "run_seconds": [
-        0.1656632000231184
+        0.16446780000114813
       ],
-      "seconds": 0.21522959996946156
+      "seconds": 0.20798559999093413
     },
     {
       "id": "malformed-verification:windows",
@@ -4198,11 +4198,11 @@
         }
       ],
       "passed": true,
-      "artifact": "malformed-verification-windows\\evidence\\20261001T010949-40ebce5024b140a2a6a8243aa41194d2",
+      "artifact": "malformed-verification-windows\\evidence\\20261001T012204-a148cac6cde0449e8d5e7a7c889d9957",
       "run_seconds": [
-        0.16216839995468035
+        0.16338809998705983
       ],
-      "seconds": 0.2087868000380695
+      "seconds": 0.2048077000072226
     },
     {
       "id": "malformed-verification:linux",
@@ -4327,11 +4327,11 @@
         }
       ],
       "passed": true,
-      "artifact": "malformed-verification-linux\\evidence\\20261001T010949-4eebeb14b79c48ab8e016a7b383d6537",
+      "artifact": "malformed-verification-linux\\evidence\\20261001T012205-844d8c353ee44b69bb0aaa0f9eb89b0c",
       "run_seconds": [
-        0.17030549998162314
+        0.16631330002564937
       ],
-      "seconds": 0.2194875999703072
+      "seconds": 0.2098087999620475
     },
     {
       "id": "missing-required-tool:macos",
@@ -4456,11 +4456,11 @@
         }
       ],
       "passed": true,
-      "artifact": "missing-required-tool-macos\\evidence\\20261001T010950-ce94b056105a46c8b00a1513dd65d511",
+      "artifact": "missing-required-tool-macos\\evidence\\20261001T012205-50f1067ca3a44569815fc7d8972fe45a",
       "run_seconds": [
-        0.1663018999970518
+        0.1638876000070013
       ],
-      "seconds": 0.21332219999749213
+      "seconds": 0.20326010003918782
     },
     {
       "id": "missing-required-tool:windows",
@@ -4585,11 +4585,11 @@
         }
       ],
       "passed": true,
-      "artifact": "missing-required-tool-windows\\evidence\\20261001T010950-a13ee8fa09e84e17b04cc7e0564843d4",
+      "artifact": "missing-required-tool-windows\\evidence\\20261001T012205-73890b50cdca4b8a9e3c5eb09e147abc",
       "run_seconds": [
-        0.17944089998491108
+        0.1730239000171423
       ],
-      "seconds": 0.2269784000236541
+      "seconds": 0.2181675999891013
     },
     {
       "id": "missing-required-tool:linux",
@@ -4714,11 +4714,11 @@
         }
       ],
       "passed": true,
-      "artifact": "missing-required-tool-linux\\evidence\\20261001T010950-4f3f1d638f284cd9ae8e322a32a32a5c",
+      "artifact": "missing-required-tool-linux\\evidence\\20261001T012205-572f808a8cc64ae5bf89aa3b284ccb2f",
       "run_seconds": [
-        0.1667166999541223
+        0.1637753999675624
       ],
-      "seconds": 0.21680670004570857
+      "seconds": 0.20952449995093048
     },
     {
       "id": "empty-accessibility-evidence:macos",
@@ -4843,11 +4843,11 @@
         }
       ],
       "passed": true,
-      "artifact": "empty-accessibility-evidence-macos\\evidence\\20261001T010950-e903191d9b614f80934d04a4a011b8b4",
+      "artifact": "empty-accessibility-evidence-macos\\evidence\\20261001T012206-b3f627fd2eff4a31901a7455f427dd2e",
       "run_seconds": [
-        0.16413059999467805
+        0.1776749999844469
       ],
-      "seconds": 0.21298270003171638
+      "seconds": 0.22064059996046126
     },
     {
       "id": "empty-accessibility-evidence:windows",
@@ -4972,11 +4972,11 @@
         }
       ],
       "passed": true,
-      "artifact": "empty-accessibility-evidence-windows\\evidence\\20261001T010951-dc66a37aa6ca4ce7993eb9f74bcb67d7",
+      "artifact": "empty-accessibility-evidence-windows\\evidence\\20261001T012206-4df16394426b433caee2a0ef61b81bc5",
       "run_seconds": [
-        0.17744959995616227
+        0.16684469999745488
       ],
-      "seconds": 0.2259286000044085
+      "seconds": 0.20992460002889857
     },
     {
       "id": "empty-accessibility-evidence:linux",
@@ -5101,11 +5101,11 @@
         }
       ],
       "passed": true,
-      "artifact": "empty-accessibility-evidence-linux\\evidence\\20261001T010951-fad73b33785d4390bc3aa14a09455aa1",
+      "artifact": "empty-accessibility-evidence-linux\\evidence\\20261001T012206-87e3b995054e4256b604390dc9271029",
       "run_seconds": [
-        0.16301700001349673
+        0.16687620000448078
       ],
-      "seconds": 0.21572249999735504
+      "seconds": 0.21283259999472648
     },
     {
       "id": "screenshot-is-not-task-proof:macos",
@@ -5230,11 +5230,11 @@
         }
       ],
       "passed": true,
-      "artifact": "screenshot-is-not-task-proof-macos\\evidence\\20261001T010951-7bf6a4fe402e43dcbe451f2e7978802d",
+      "artifact": "screenshot-is-not-task-proof-macos\\evidence\\20261001T012206-47e7c4e3103b4cc4a25de3b3d5ea4415",
       "run_seconds": [
-        0.24088150000898167
+        0.17683220002800226
       ],
-      "seconds": 0.2977898000390269
+      "seconds": 0.21961189998546615
     },
     {
       "id": "screenshot-is-not-task-proof:windows",
@@ -5359,11 +5359,11 @@
         }
       ],
       "passed": true,
-      "artifact": "screenshot-is-not-task-proof-windows\\evidence\\20261001T010951-1a810a0626cc41178ec8c678e3c29db6",
+      "artifact": "screenshot-is-not-task-proof-windows\\evidence\\20261001T012206-d39d0669c211446e9a50e98098a2ffaf",
       "run_seconds": [
-        0.28120900003705174
+        0.16263289999915287
       ],
-      "seconds": 0.3310760000022128
+      "seconds": 0.20389499998418614
     },
     {
       "id": "screenshot-is-not-task-proof:linux",
@@ -5488,11 +5488,11 @@
         }
       ],
       "passed": true,
-      "artifact": "screenshot-is-not-task-proof-linux\\evidence\\20261001T010952-b49aec308ee745c6b75d1862aa2828e3",
+      "artifact": "screenshot-is-not-task-proof-linux\\evidence\\20261001T012207-01a88d08b0164c28995d81141cb8ac4f",
       "run_seconds": [
-        0.19971519999671727
+        0.163436200004071
       ],
-      "seconds": 0.2521760000381619
+      "seconds": 0.20992819999810308
     },
     {
       "id": "successful-call-without-side-effect:macos",
@@ -5625,11 +5625,11 @@
         }
       ],
       "passed": true,
-      "artifact": "successful-call-without-side-effect-macos\\evidence\\20261001T010952-4aa0cfbe98dc445e9e5b92c4ea20e3fd",
+      "artifact": "successful-call-without-side-effect-macos\\evidence\\20261001T012207-45781bbfd2404bd4a1fbc21d56e52f0d",
       "run_seconds": [
-        0.16509040002711117
+        0.18001480004750192
       ],
-      "seconds": 0.2117566000088118
+      "seconds": 0.21870969998417422
     },
     {
       "id": "successful-call-without-side-effect:windows",
@@ -5762,11 +5762,11 @@
         }
       ],
       "passed": true,
-      "artifact": "successful-call-without-side-effect-windows\\evidence\\20261001T010952-71f15ff9b6764f8ca3df4477a68fa4d6",
+      "artifact": "successful-call-without-side-effect-windows\\evidence\\20261001T012207-03b2c539bc7f48adb0f52df2805ab56f",
       "run_seconds": [
-        0.18363700003828853
+        0.16691239998908713
       ],
-      "seconds": 0.2405311000184156
+      "seconds": 0.2130168000003323
     },
     {
       "id": "successful-call-without-side-effect:linux",
@@ -5899,11 +5899,11 @@
         }
       ],
       "passed": true,
-      "artifact": "successful-call-without-side-effect-linux\\evidence\\20261001T010952-e28bbd7882f94816865acf749a1d765c",
+      "artifact": "successful-call-without-side-effect-linux\\evidence\\20261001T012207-5e0f072b6da44e93905d3b17be515c61",
       "run_seconds": [
-        0.17692990001523867
+        0.17189520003739744
       ],
-      "seconds": 0.22944140003528446
+      "seconds": 0.21368359995540231
     },
     {
       "id": "unicode-fidelity:macos",
@@ -6036,11 +6036,11 @@
         }
       ],
       "passed": true,
-      "artifact": "unicode-fidelity-macos\\evidence\\20261001T010953-fef94b2311aa46e29188959d170d3577",
+      "artifact": "unicode-fidelity-macos\\evidence\\20261001T012207-a6899a6ae3a14c9e8c87a7d024c1be92",
       "run_seconds": [
-        0.1627020000014454
+        0.1791403000243008
       ],
-      "seconds": 0.20885470003122464
+      "seconds": 0.22296549996826798
     },
     {
       "id": "unicode-fidelity:windows",
@@ -6173,11 +6173,11 @@
         }
       ],
       "passed": true,
-      "artifact": "unicode-fidelity-windows\\evidence\\20261001T010953-4bd8e0085a4f4cd49c759ae6a0e421c3",
+      "artifact": "unicode-fidelity-windows\\evidence\\20261001T012208-5ca2c3db05fd4917877f9f7d090d482e",
       "run_seconds": [
-        0.16726949997246265
+        0.1730655999854207
       ],
-      "seconds": 0.2128658999572508
+      "seconds": 0.21758260001661256
     },
     {
       "id": "unicode-fidelity:linux",
@@ -6310,11 +6310,11 @@
         }
       ],
       "passed": true,
-      "artifact": "unicode-fidelity-linux\\evidence\\20261001T010953-2d2b9418f2144b67bc653ff46a95f2e4",
+      "artifact": "unicode-fidelity-linux\\evidence\\20261001T012208-7e7794530f374a948852f2836fabca20",
       "run_seconds": [
-        0.1691313000046648
+        0.17183599999407306
       ],
-      "seconds": 0.2146428999840282
+      "seconds": 0.21906410000519827
     },
     {
       "id": "tool-reported-failure:macos",
@@ -6439,11 +6439,11 @@
         }
       ],
       "passed": true,
-      "artifact": "tool-reported-failure-macos\\evidence\\20261001T010953-c3e98f43d544436899b2832bd04b035b",
+      "artifact": "tool-reported-failure-macos\\evidence\\20261001T012208-de5a7ae6426c47e99e50f19de0d3f966",
       "run_seconds": [
-        0.178531399986241
+        0.1803222000016831
       ],
-      "seconds": 0.22703559999354184
+      "seconds": 0.2251966999610886
     },
     {
       "id": "tool-reported-failure:windows",
@@ -6568,11 +6568,11 @@
         }
       ],
       "passed": true,
-      "artifact": "tool-reported-failure-windows\\evidence\\20261001T010953-abdd2da34681405199e219ded32298ea",
+      "artifact": "tool-reported-failure-windows\\evidence\\20261001T012208-2da693c204b447f485247bdaf912fadc",
       "run_seconds": [
-        0.16310730000259355
+        0.16865850001340732
       ],
-      "seconds": 0.21508169994922355
+      "seconds": 0.21512309997342527
     },
     {
       "id": "tool-reported-failure:linux",
@@ -6697,11 +6697,11 @@
         }
       ],
       "passed": true,
-      "artifact": "tool-reported-failure-linux\\evidence\\20261001T010954-fe0ba5c9d70a4824850ba9e352c297ca",
+      "artifact": "tool-reported-failure-linux\\evidence\\20261001T012209-319ec07084c1437cac6baf1df637c9f3",
       "run_seconds": [
-        0.17313369998009875
+        0.16690239997114986
       ],
-      "seconds": 0.2204147000447847
+      "seconds": 0.21082979999482632
     },
     {
       "id": "rpc-failure:macos",
@@ -6822,11 +6822,11 @@
         }
       ],
       "passed": true,
-      "artifact": "rpc-failure-macos\\evidence\\20261001T010954-142d2e0344c44fb49d5a97ba8e1835f7",
+      "artifact": "rpc-failure-macos\\evidence\\20261001T012209-c1a51ec17bc844588d9f230505212d2c",
       "run_seconds": [
-        0.16260709997732192
+        0.17401439999230206
       ],
-      "seconds": 0.20897209999384359
+      "seconds": 0.2201473999884911
     },
     {
       "id": "rpc-failure:windows",
@@ -6947,11 +6947,11 @@
         }
       ],
       "passed": true,
-      "artifact": "rpc-failure-windows\\evidence\\20261001T010954-14be92fc76ca46dfaacf7aab0d96942e",
+      "artifact": "rpc-failure-windows\\evidence\\20261001T012209-d1ca443cbb2e4f6898a36f93a4d40125",
       "run_seconds": [
-        0.19698030001018196
+        0.16594410000834614
       ],
-      "seconds": 0.2459664000198245
+      "seconds": 0.21200070000486448
     },
     {
       "id": "rpc-failure:linux",
@@ -7072,11 +7072,11 @@
         }
       ],
       "passed": true,
-      "artifact": "rpc-failure-linux\\evidence\\20261001T010954-dba8034c63134a0dadbe9cfb2c262852",
+      "artifact": "rpc-failure-linux\\evidence\\20261001T012209-0ef30acb4a254d05966999b31545fe6e",
       "run_seconds": [
-        0.15952919999836013
+        0.16577769996365532
       ],
-      "seconds": 0.20589660003315657
+      "seconds": 0.20813650003401563
     },
     {
       "id": "transport-disconnect:macos",
@@ -7197,11 +7197,11 @@
         }
       ],
       "passed": true,
-      "artifact": "transport-disconnect-macos\\evidence\\20261001T010955-d2ec4a64c58847a3b11bcd63d70a1b4a",
+      "artifact": "transport-disconnect-macos\\evidence\\20261001T012209-f1f61d65192c4d848eef28575c2cd5bd",
       "run_seconds": [
-        0.1716522000497207
+        0.17894610000075772
       ],
-      "seconds": 0.2174531000200659
+      "seconds": 0.22394170000916347
     },
     {
       "id": "transport-disconnect:windows",
@@ -7322,11 +7322,11 @@
         }
       ],
       "passed": true,
-      "artifact": "transport-disconnect-windows\\evidence\\20261001T010955-3084c77fac884ee091dc4413e44e8cb0",
+      "artifact": "transport-disconnect-windows\\evidence\\20261001T012210-850c626102534c308ce05103d30cbd26",
       "run_seconds": [
-        0.15874749998329207
+        0.1664935000007972
       ],
-      "seconds": 0.2083445000462234
+      "seconds": 0.20689979998860508
     },
     {
       "id": "transport-disconnect:linux",
@@ -7447,11 +7447,11 @@
         }
       ],
       "passed": true,
-      "artifact": "transport-disconnect-linux\\evidence\\20261001T010955-40f35700e9564113bf2697f7ce3573cf",
+      "artifact": "transport-disconnect-linux\\evidence\\20261001T012210-a755f840578144af876ef4ef2b050e18",
       "run_seconds": [
-        0.17562669998733327
+        0.16927950002718717
       ],
-      "seconds": 0.22593270003562793
+      "seconds": 0.2118816999718547
     },
     {
       "id": "reset-failure:macos",
@@ -7576,11 +7576,11 @@
         }
       ],
       "passed": true,
-      "artifact": "reset-failure-macos\\evidence\\20261001T010955-476fd13849084352a17198b5234167e9",
+      "artifact": "reset-failure-macos\\evidence\\20261001T012210-e15447a214474816b2747f92f4e4e880",
       "run_seconds": [
-        0.162009300023783
+        0.17733189999125898
       ],
-      "seconds": 0.20890779996989295
+      "seconds": 0.22206989995902404
     },
     {
       "id": "reset-failure:windows",
@@ -7705,11 +7705,11 @@
         }
       ],
       "passed": true,
-      "artifact": "reset-failure-windows\\evidence\\20261001T010955-4168a7d4120d446cb2eaf971288986f5",
+      "artifact": "reset-failure-windows\\evidence\\20261001T012210-013b046b865d4488af76af4370301eba",
       "run_seconds": [
-        0.16886209999211133
+        0.16627700004028156
       ],
-      "seconds": 0.21332979999715462
+      "seconds": 0.2093631000025198
     },
     {
       "id": "reset-failure:linux",
@@ -7834,11 +7834,11 @@
         }
       ],
       "passed": true,
-      "artifact": "reset-failure-linux\\evidence\\20261001T010956-3dc98c78bc4a49388a748145df26a02a",
+      "artifact": "reset-failure-linux\\evidence\\20261001T012211-cd41b62dbbc147e1b0e645f38602a126",
       "run_seconds": [
-        0.15698249998968095
+        0.16969529999187216
       ],
-      "seconds": 0.20094010001048446
+      "seconds": 0.21416150004370138
     },
     {
       "id": "rollback-retains-prior-marker:macos",
@@ -8075,12 +8075,12 @@
         }
       ],
       "passed": true,
-      "artifact": "rollback-retains-prior-marker-macos\\evidence\\20261001T010956-dfbdfa7c5c3c4fd291480eedb213be83",
+      "artifact": "rollback-retains-prior-marker-macos\\evidence\\20261001T012211-fa7a070e7c00418b833fdc9d107d5922",
       "run_seconds": [
-        0.1752643000218086,
-        0.15043759997934103
+        0.18066969997016713,
+        0.15601920004701242
       ],
-      "seconds": 0.39600060001248494
+      "seconds": 0.40130590001353994
     },
     {
       "id": "rollback-retains-prior-marker:windows",
@@ -8317,12 +8317,12 @@
         }
       ],
       "passed": true,
-      "artifact": "rollback-retains-prior-marker-windows\\evidence\\20261001T010956-9fa34c10adce49bc85dbaf2c2c4fe897",
+      "artifact": "rollback-retains-prior-marker-windows\\evidence\\20261001T012211-984d3767358c4f53b92c7689e20ac3eb",
       "run_seconds": [
-        0.18120079999789596,
-        0.14759579999372363
+        0.17586310004116967,
+        0.16724719997728243
       ],
-      "seconds": 0.40081359999021515
+      "seconds": 0.41251330001978204
     },
     {
       "id": "rollback-retains-prior-marker:linux",
@@ -8559,12 +8559,12 @@
         }
       ],
       "passed": true,
-      "artifact": "rollback-retains-prior-marker-linux\\evidence\\20261001T010957-9ba184c583894d35b5f98468bb79d4a6",
+      "artifact": "rollback-retains-prior-marker-linux\\evidence\\20261001T012212-5bb9ba3481854fe294400d0bad76ef73",
       "run_seconds": [
-        0.17873949999921024,
-        0.1493606999865733
+        0.16986729996278882,
+        0.1712032999494113
       ],
-      "seconds": 0.39828320004744455
+      "seconds": 0.4132744999951683
     },
     {
       "id": "cleanup-failure-stops-retry:macos",
@@ -8697,11 +8697,11 @@
         }
       ],
       "passed": true,
-      "artifact": "cleanup-failure-stops-retry-macos\\evidence\\20261001T010957-a497e21d9fa44b6b83611c74d50acfe7",
+      "artifact": "cleanup-failure-stops-retry-macos\\evidence\\20261001T012212-d832973b83c04076a6e96fa91ca24def",
       "run_seconds": [
-        0.17978790000779554
+        0.17092650005361065
       ],
-      "seconds": 0.22722409997368231
+      "seconds": 0.21672409999882802
     },
     {
       "id": "cleanup-failure-stops-retry:windows",
@@ -8834,11 +8834,11 @@
         }
       ],
       "passed": true,
-      "artifact": "cleanup-failure-stops-retry-windows\\evidence\\20261001T010957-82d4aa8aff784448a8595473ea5454ca",
+      "artifact": "cleanup-failure-stops-retry-windows\\evidence\\20261001T012212-440ad2807ab642d3a60ebd11a73b4bda",
       "run_seconds": [
-        0.16538180003408343
+        0.18466090003494173
       ],
-      "seconds": 0.21673009998630732
+      "seconds": 0.233162899967283
     },
     {
       "id": "cleanup-failure-stops-retry:linux",
@@ -8971,11 +8971,11 @@
         }
       ],
       "passed": true,
-      "artifact": "cleanup-failure-stops-retry-linux\\evidence\\20261001T010957-9d73e50cf2f443a6a4abc26db3200b33",
+      "artifact": "cleanup-failure-stops-retry-linux\\evidence\\20261001T012212-5136b47d5861446c8e3f36d8bfd54a61",
       "run_seconds": [
-        0.1694603000069037
+        0.17268899996997789
       ],
-      "seconds": 0.21841719996882603
+      "seconds": 0.22056260000681505
     },
     {
       "id": "notifications-cannot-hide-timeout:windows",
@@ -9096,11 +9096,11 @@
         }
       ],
       "passed": true,
-      "artifact": "notifications-cannot-hide-timeout-windows\\evidence\\20261001T010958-d63a2771a1a8499c9338e7bcb384ee8b",
+      "artifact": "notifications-cannot-hide-timeout-windows\\evidence\\20261001T012213-e46e4b8b27bc4574af7fd67f68e01fc2",
       "run_seconds": [
-        1.1643072000006214
+        1.1688812000211328
       ],
-      "seconds": 1.2103405999951065
+      "seconds": 1.2149767000228167
     },
     {
       "id": "reset-timeout-cleanup:windows",
@@ -9225,11 +9225,11 @@
         }
       ],
       "passed": true,
-      "artifact": "reset-timeout-cleanup-windows\\evidence\\20261001T010959-ab23a8abb5194466abf1de4b7dff34f9",
+      "artifact": "reset-timeout-cleanup-windows\\evidence\\20261001T012214-e452eb2a15f647b189767aa17a390a7b",
       "run_seconds": [
-        1.0601385000045411
+        1.09008559997892
       ],
-      "seconds": 1.1100458000437357
+      "seconds": 1.1367750999634154
     },
     {
       "id": "boundary:shared-resource",
@@ -9576,7 +9576,7 @@
         }
       ],
       "passed": true,
-      "seconds": 0.5859315000125207
+      "seconds": 0.5742319999844767
     },
     {
       "id": "extension-wire:decline",
@@ -9601,7 +9601,7 @@
         }
       ],
       "passed": true,
-      "seconds": 0.15460099995834753
+      "seconds": 0.15556739998282865
     },
     {
       "id": "extension-wire:unavailable",
@@ -9626,7 +9626,7 @@
         }
       ],
       "passed": true,
-      "seconds": 0.15561600000364706
+      "seconds": 0.15435900003649294
     },
     {
       "id": "extension-wire:unknown-tool",
@@ -9647,7 +9647,7 @@
         }
       ],
       "passed": true,
-      "seconds": 0.15534120000666007
+      "seconds": 0.15478260000236332
     },
     {
       "id": "extension-wire:cancel",
@@ -9684,7 +9684,7 @@
         }
       ],
       "passed": true,
-      "seconds": 0.4667301999870688
+      "seconds": 0.4656954000238329
     },
     {
       "id": "extension-wire:shutdown",
@@ -9721,18 +9721,18 @@
         }
       ],
       "passed": true,
-      "seconds": 0.4324309999938123
+      "seconds": 0.40751349995844066
     }
   ],
-  "revision": "6cd7b23d43963a1cd75af5f44dabc42ed16a0cb0",
+  "revision": "424f506e0a8631ce2b29522ae38149d3973d1919",
   "worktree_dirty": true,
   "metrics": {
     "cases": 80,
     "passed": 80,
     "false_greens": 0,
     "negative_cases": 49,
-    "synthetic_slowest_target_p50_seconds": 0.15187900001183152,
-    "synthetic_slowest_target_p95_seconds": 0.1613861999940127
+    "synthetic_slowest_target_p50_seconds": 0.1563880999747198,
+    "synthetic_slowest_target_p95_seconds": 0.16842890001134947
   },
   "thresholds": {
     "minimum_cases": 80,
