@@ -1,0 +1,8 @@
+__pycache__/
+*.py[cod]
+.venv/
+.local/
+gui-evidence/
+*.egg-info/
+targets.json
+scenario.json

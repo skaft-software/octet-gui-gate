@@ -1,0 +1,19 @@
+name = "octet-gui-gate"
+version = "0.1.0"
+api_version = "0.4"
+requires_octet = "=0.8.2"
+description = "Experimental prepared-guest native GUI gate for Skaft workflows; not an official Octet bundle"
+
+[entrypoint]
+command = "extension.py"
+
+[capabilities]
+filesystem = "unrestricted"
+process = true
+network = true
+environment = ["OCTET_STATE_DIR", "DISPLAY", "WAYLAND_DISPLAY", "XDG_RUNTIME_DIR", "XDG_SESSION_TYPE", "XDG_DATA_HOME", "XDG_DATA_DIRS", "XDG_CONFIG_HOME", "DBUS_SESSION_BUS_ADDRESS", "XAUTHORITY", "XDG_CURRENT_DESKTOP", "XDG_SESSION_DESKTOP", "DESKTOP_SESSION", "XDG_STATE_HOME", "KDE_FULL_SESSION", "HYPRLAND_INSTANCE_SIGNATURE", "SWAYSOCK", "APPDATA", "LOCALAPPDATA", "USERPROFILE", "SYSTEMROOT", "WINDIR"]
+
+[contributes]
+commands = ["gui-gate"]
+tools = ["gui_gate_status"]
+confirmations = true
