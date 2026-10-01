@@ -6,14 +6,16 @@
 VM manager. Its synthetic tests exercise concurrent stdio connections, evidence,
 assertions, reset/cleanup ordering, and failure propagation. They do **not** qualify
 Windows, Linux, macOS, snapshot performance, or permission persistence. No live
-three-platform green run is recorded. This repository has no application suite,
-golden guest images, or VM lifecycle adapters for that claim.
+three-platform green run is recorded. A [UTM lifecycle adapter, guest recipe,
+native calibration scenario, and campaign auditor](utm.md) are now implemented
+and contract-tested; golden guest images, real device-state rollback, intended
+application coverage, and rebuilt-guest qualification remain absent.
 
 The proposed laptop-only topology is:
 
 | Name | Guest | Local VM backend | Reset strategy |
 | --- | --- | --- | --- |
-| `macos` | macOS ARM64 | Apple Virtualization.framework (e.g. a locally built UTM) | Stopped golden bundle, APFS copy-on-write clone |
+| `macos` | macOS ARM64 | Apple Virtualization.framework via pinned UTM | UTM Apple checkpoint (macOS 27+/ASIF); separately qualify any clone alternative |
 | `windows` | Windows 11 ARM64 | QEMU ARM64 + HVF, UEFI, required virtual TPM | Qualified disk/firmware/TPM checkpoint or stopped golden clone |
 | `linux` | ARM64 Linux desktop | QEMU ARM64 + HVF | Qualified checkpoint or stopped golden clone |
 
@@ -67,13 +69,22 @@ The configuration has `version: 1`, optional positive `timeout_seconds` (default
 }
 ```
 
-**`guest-adapter` and `mcp-proxy.cmd` are operator-provided, not implemented here.**
+**These generic `guest-adapter`/`mcp-proxy.cmd` paths are placeholders.**
+Use the bundled UTM adapter and fixed guest entrypoints in [the UTM recipe](utm.md)
+or provide a separately qualified backend.
 Configure actual pinned identity values; placeholders must not qualify a guest.
 Commands are argv arrays, not local shell strings. SSH remote commands still
 use the guest's shell; use fixed, reviewed wrapper paths. `environment` can
 explicitly supply transport environment variables (e.g. `HOME` for SSH); the
 shared Cua client otherwise forwards only its reviewed desktop environment.
 Do not put secrets in configuration: the exact config is saved as evidence.
+
+The runner supplies a unique `OCTET_GUI_GATE_OWNER` to reset/verify/destroy for
+each target repetition; cleanup must never touch a different owner. Optional
+`acceptance` budgets (`max_wave_seconds`, `max_reset_seconds`,
+`max_campaign_seconds`) must be positive finite numbers chosen before execution;
+the separate calibration audit enforces them, not the runner's task-success flag.
+Optional target `oracles` maps read-only application oracle names to fixed argv.
 
 Adapter responsibilities:
 
@@ -94,6 +105,9 @@ Adapter responsibilities:
    Keep diagnostics off stdout. Do not create a different permission identity.
 
 The harness runs three workers, one per OS; repetitions on a guest are serial.
+A readiness barrier precedes scenario dispatch; a wave that cannot synchronize
+all three authorized desktops cannot be green, though independent authorized
+targets still finish their evidence. Desktop-ready/finished intervals are retained.
 It rejects repeated resource names but cannot detect two names aliasing the
 same VM. Cross-process leasing belongs to the adapter. A failed cleanup stops
 further repetitions. Hook timeouts kill the direct child, not every descendant:
@@ -124,7 +138,8 @@ A production scenario should locate the intended app/window, read its accessibil
 state, act, then assert the specific resulting value or use an independent
 application test oracle. Avoid OS-specific code by resolving app names and other
 platform data from `bindings`. Literal objects of the form `{"$ref":"/results/observe/..."}`
-resolve previous results; `/run_id` supplies the repetition label. There is no
+resolve previous results; `/run_id` supplies the repetition label, and `/guest`
+addresses the independently observed verification proof. There is no
 expression evaluator or scenario shell. Tools must appear in every target's
 catalog before any scenario action is dispatched.
 
@@ -133,10 +148,18 @@ value type), `contains`, or `length_at_least` (positive integer). Missing eviden
 tool errors, assertion failures, failed identity/readiness, and cleanup errors
 all prevent green. At least one assertion is mandatory. Prefer accessibility
 or independent application state over screenshots. A screenshot alone never
-constitutes a passing assertion. This harness does not implement semantic
-selectors, polling, or an app-specific oracle; scenarios must use qualified,
-stable tool responses. Flaky asynchronous startup should be handled in the
-adapter's readiness check, not hidden by accepting missing evidence.
+constitutes a passing assertion. For independent application state, a step can
+replace `tool` with `oracle`, naming an oracle configured on **every** target.
+Its resolved arguments are JSON on stdin; it returns one JSON result object on
+stdout. Raw stdout/stderr and normalized evidence are retained. Tool errors,
+nonzero oracle exits, invalid JSON, and failed assertions remain red. Each step
+uses exactly one tool/oracle; a scenario still requires at least one driver tool.
+
+The bundled native app publishes its real Tk field state; its read-only oracle
+can wait for the expected marker within a bounded deadline, returning observed
+wrong state on expiry so assertions fail. There is no generic expression engine,
+selector DSL, or automatic retry of desktop actions. Other applications need
+qualified semantic responses or their own independent read-only oracle.
 
 Every invocation gets a new campaign directory with the exact configuration and
 scenario, per-run/per-OS hook stdout/stderr, raw per-step arguments/results,
@@ -211,10 +234,10 @@ latency separately. Define an acceptable per-change time budget before declaring
 success. Increase Linux/Windows capacity only after measured headroom; this
 harness intentionally does not implement pools or fleet orchestration.
 
-Remaining acceptance work: implement/qualify local lifecycle adapters, establish
-Windows licensing, build the actual scenario suite, prove rollback/permission
-persistence on rebuilt guests, and attach a live concurrent all-OS campaign with
-acceptable repeated-run timings. Until then, this is a tested composition
+Remaining acceptance work: qualify the implemented lifecycle adapter and recorded
+recipes on the actual laptop, establish Windows licensing, qualify the intended
+application, prove rollback/permission persistence on rebuilt guests, and attach
+a live concurrent all-OS campaign with acceptable repeated-run timings. Until then, this is a tested composition
 boundary, **not completion of the six success criteria**.
 
 ```sh

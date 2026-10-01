@@ -26,6 +26,15 @@ response. `--require-product` is a blocked release check, not a live-evidence
 validator. A future live validator must be independently reviewed and evaluated
 before removing this block.
 
+The bundled [UTM/native calibration recipe](utm.md) now provides an experimental
+lifecycle implementation and a separate `gui_gate.audit` validator for its exact
+four-step scenario. That audit requires 20+ completed waves, unchanged checkpoint/
+backend metadata, fresh interactive challenges, independent native outcomes,
+desktop-ready overlap, and predeclared latency budgets. It **also always reports
+`product_qualified:false`**; no live campaign has been collected here. Runner
+success grades tasks/cleanup/synchronization, while this separate audit grades
+the calibration and `acceptance` budgets. Neither is the full product gate.
+
 CI runs regressions plus the full synthetic eval on Linux, Windows, and macOS
 **hosts**, retaining artifacts even on failure. These do not create guests or
 operate desktops. Manual CI dispatch can request the blocked full-product gate.
@@ -61,7 +70,7 @@ as evidence of computer-use model quality or browser automation correctness.
   zero tool calls on the failed target; cleanup must still be attempted.
 - Failed cleanup stops retries, cancellations cannot be green, and gracefully
   shutting down the extension requests cleanup of already-started targets.
-- Provider credential environment variables are not forwarded to workers/hooks.
+- Extension workers/hooks do not inherit provider credential environment variables.
 - Invalid executable configuration is rejected before lifecycle dispatch.
 
 ### Distribution and independence
@@ -93,16 +102,43 @@ not an exhaustive mutation analysis. There is no held-out real-application
 corpus yet. Add actual application regression scenarios and previously unseen
 failure cases before claiming that this dataset represents production use.
 
+### Additional implementation regressions (not live acceptance)
+
+The regression suite additionally tests atomic UTM leases, owner fencing, actual
+pinned snapshot CLI argv, rollback-before-release, incomplete checkpoints, explicit
+disk-only mode, total deadlines, and failed readiness/recovery. Guest probe tests
+exercise release signature/TCC attribution, the pinned Linux permission schema,
+UID/display/AT-SPI readiness, Windows SID/nonzero-session checks, no capture against
+locked/unauthorized desktops, fixed no-auto-launch proxies, fresh mailbox challenges,
+and external application oracles. Atomic native-state publication is stress-tested
+against concurrent readers, including Windows sharing conflicts; bounded retries
+do not suppress persistent access denial. Unicode oracle/probe stdio is checked
+with a legacy Windows codec to ensure machine-readable UTF-8 JSON. Small native
+Windows/macOS **read-only API**
+tests run only on their matching CI hosts; they do not operate guests or qualify
+unattended automation.
+
+The independent calibration auditor has fabricated positive controls and **29
+negative controls**, including missing evidence, acknowledgement-only success,
+stale reset, wrong process/window, host-attributed TCC, Session 0, absent AT-SPI,
+reused challenges, shared guests, no desktop overlap, changed checkpoints/backend
+hashes, corrupted evidence, understated campaign time, and out-of-order waves.
+These fixtures deliberately can satisfy the calibration contract: the auditor is
+not a cryptographic attestation service and still refuses product qualification.
+The source fingerprint covers new modules/tests and example JSON as well as the
+original harness/evaluator; manifest inclusion is not evidence every path ran in
+the 80-case contract eval. Regressions and contract evals are separate CI steps.
+
 ## Original requirement matrix
 
 | ID | Original requirement | What is evaluated | Remaining acceptance evidence |
 | --- | --- | --- | --- |
 | R1 | One scenario, named macos/windows/linux | Same scenario and data-only bindings; required catalogs; wire launch/status | Actual pinned Cua tool schemas and the intended app on all guests |
-| R2 | Unattended all-OS green run from Apple Silicon, no paid capacity | Harness runs without model/service dependencies; unusable desktops fail closed | Laptop, local VM adapters, licensed Windows guest, pre-authorized desktops, live suite |
-| R3 | Machine-verifiable durable outcome | Independent state oracle, false acknowledgements, Unicode, missing trees, screenshot-only responses, hash checks | Real app/accessibility oracle and retained live campaign artifacts |
-| R4 | Tens of low-cost repeats; rollback | 20 fixture waves, stale reset detection, timeout cleanup, retry stop | Real snapshots/restore, readiness, host resource measurements, acceptable repeat budget |
-| R5 | At least one of each OS concurrently | Overlapping three subprocess intervals; one worker per label | Overlapping three **live guest desktop** intervals on the laptop |
-| R6 | Rebuild recipe and same permission identity | Changed/typed identity mismatch fails before tool dispatch | Rebuilt guests, recorded recipes, real signature/SID outputs, live consent checks |
+| R2 | Unattended all-OS green run from Apple Silicon, no paid capacity | Harness dependency boundary, lease-fenced UTM protocol tests, observed guest proof negatives | Actual compatible laptop/backend, entitled Windows guest, authorized desktops, live suite |
+| R3 | Machine-verifiable durable outcome | Independent synthetic oracle plus external native-state oracle and raw-evidence auditor controls | Real native campaign and intended app qualification |
+| R4 | Tens of low-cost repeats; rollback | 20 fixture waves; UTM restore/fencing/deadline tests; numeric-budget auditor controls | Real rollback/device-state, cold-boot comparison, resource use and repeat latency |
+| R5 | At least one of each OS concurrently | Overlapping subprocesses, readiness barrier, live-interval auditor sensitivity controls | Overlapping three **live guest desktop** intervals on the laptop |
+| R6 | Rebuild recipe and same permission identity | Observed signature/SID/UID probes and changed identity negatives; attended recipe | Recorded exact build inputs, rebuilt guests and live post-restore/rebuild consent |
 | C4 | OS privilege/consent grants remain user-owned | Refusal/unavailable approval does not dispatch; absent grants deny tools | Attended initial authorization and independent post-restore permission probes |
 
 ## Results and reproducibility
@@ -132,7 +168,8 @@ not be advertised as snapshot/rollback performance.
 1. Pin the release source, app build, Cua artifacts, OS installers, VM backend,
    firmware/TPM state, allocated resources, and guest identities. Document legal
    Windows entitlement and confirm no hosted service is used.
-2. Implement/qualify lease-safe adapters. Prove a failed or interrupted reset
+2. Qualify the bundled lease-safe adapter (or independently implement another).
+   Prove a failed or interrupted reset
    cannot delete the golden image or another campaign's guest. Exercise recovery
    after worker/host termination, not just cooperative cancellation.
 3. Prepare and authorize guests with their owners. Pin actual macOS bundle ID,

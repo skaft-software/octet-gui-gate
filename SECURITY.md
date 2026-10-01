@@ -5,7 +5,10 @@ with the operator's filesystem, process, and network authority. Configuration
 is executable trusted input; a malicious hook or MCP command can run arbitrary
 programs. Review the exact commit and configuration before authorizing a run.
 An Octet workflow confirmation authorizes the whole campaign, not individual
-GUI actions. Do not use it where per-action approval is required.
+GUI actions. Do not use it where per-action approval is required. Extension
+workers get a curated environment; standalone CLI lifecycle/oracle hooks inherit
+the invoking shell's environment. Use a clean shell and reviewed hooks; explicit
+transport environment is also trusted operator input.
 
 Use isolated disposable guests, scoped SSH keys, verified SSH host keys, exclusive
 VM leases, and no personal credentials. Never address the user's everyday
@@ -17,7 +20,18 @@ driver, configuration, and logs. They may expose secrets. Keep state/evidence in
 operator-controlled private storage. POSIX directory mode hints do not provide
 Windows ACL isolation; configure permissions yourself. Evidence hashes are not
 cryptographic attestations of target trust. Guest identity verification is only
-as reliable as the independently implemented verification adapter.
+as reliable as the independently implemented verification adapter. The bundled
+probe measures actual signature/SID/UID/session/driver observations; hashes and
+fresh challenges are not cryptographic guest attestation. Its mailbox/app-state
+directories must be private to the interactive account, with operator-configured
+Windows ACLs. Other local users must not be allowed to forge responses/state.
+Configured application oracles are trusted executable argv, not a sandbox.
+
+The UTM adapter fences its selected canonical VM lease with an owner token;
+never automatically remove/steal an interrupted lease. Keep descriptors and
+checkpoint contents unchanged during a campaign. It does not isolate arbitrary
+external TPM/device sidecars. Inspect and reconcile the original worker/VM using
+[the recovery procedure](docs/utm.md#recovery-and-rebuild) before taking ownership.
 
 Cancellation is cooperative, not rollback. Hooks must handle partial starts,
 reap descendants, and journal leases. Request timeouts apply per operation, not

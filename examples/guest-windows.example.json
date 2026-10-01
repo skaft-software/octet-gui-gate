@@ -1,0 +1,5 @@
+{
+  "driver": "C:\\gui\\driver\\cua-driver.exe",
+  "socket": "REPLACE_WITH_EXACT_INTERACTIVE_DAEMON_ENDPOINT",
+  "app_state": "C:\\gui\\native-state.json"
+}

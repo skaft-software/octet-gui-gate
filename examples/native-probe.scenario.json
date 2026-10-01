@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "steps": [
+    {
+      "id": "pristine",
+      "oracle": "native_state",
+      "assert": [
+        {"path": "/structuredContent/text", "op": "equals", "value": ""},
+        {"path": "/structuredContent/pid", "op": "equals", "value": {"$ref": "/guest/window/pid"}}
+      ]
+    },
+    {
+      "id": "observe",
+      "tool": "get_window_state",
+      "arguments": {
+        "pid": {"$ref": "/guest/window/pid"},
+        "window_id": {"$ref": "/guest/window/window_id"},
+        "include_screenshot": true,
+        "max_dimension": 512
+      }
+    },
+    {
+      "id": "write",
+      "tool": "type_text",
+      "arguments": {
+        "pid": {"$ref": "/guest/window/pid"},
+        "window_id": {"$ref": "/guest/window/window_id"},
+        "text": {"$ref": "/run_id"},
+        "delivery_mode": "foreground"
+      }
+    },
+    {
+      "id": "postcondition",
+      "oracle": "native_state",
+      "arguments": {"expected": {"$ref": "/run_id"}},
+      "assert": [
+        {"path": "/structuredContent/text", "op": "equals", "value": {"$ref": "/run_id"}},
+        {"path": "/structuredContent/pid", "op": "equals", "value": {"$ref": "/guest/window/pid"}}
+      ]
+    }
+  ]
+}

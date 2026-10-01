@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "timeout_seconds": 120,
+  "acceptance": {"max_wave_seconds": 8, "max_reset_seconds": 3, "max_campaign_seconds": 180},
+  "targets": {
+    "macos": {
+      "resource": "REPLACE_WITH_MACOS_VM_UUID",
+      "identity": {"REPLACE_WITH_OBSERVED_IDENTITY": true},
+      "reset": ["/absolute/host/python3", "-m", "gui_gate.utm", "reset", "--descriptor", "/absolute/host/manifests/macos.json"],
+      "verify": ["/absolute/host/python3", "-m", "gui_gate.utm", "verify", "--descriptor", "/absolute/host/manifests/macos.json"],
+      "destroy": ["/absolute/host/python3", "-m", "gui_gate.utm", "destroy", "--descriptor", "/absolute/host/manifests/macos.json"],
+      "mcp": ["/usr/bin/ssh", "-T", "-o", "BatchMode=yes", "gui-macos", "/Users/gui/proxy.sh"],
+      "oracles": {"native_state": ["/usr/bin/ssh", "-T", "-o", "BatchMode=yes", "gui-macos", "/Users/gui/oracle.sh"]},
+      "environment": {"HOME": "/Users/operator"}
+    },
+    "windows": {
+      "resource": "REPLACE_WITH_WINDOWS_VM_UUID",
+      "identity": {"REPLACE_WITH_OBSERVED_IDENTITY": true},
+      "reset": ["/absolute/host/python3", "-m", "gui_gate.utm", "reset", "--descriptor", "/absolute/host/manifests/windows.json"],
+      "verify": ["/absolute/host/python3", "-m", "gui_gate.utm", "verify", "--descriptor", "/absolute/host/manifests/windows.json"],
+      "destroy": ["/absolute/host/python3", "-m", "gui_gate.utm", "destroy", "--descriptor", "/absolute/host/manifests/windows.json"],
+      "mcp": ["/usr/bin/ssh", "-T", "-o", "BatchMode=yes", "gui-windows", "C:/gui/proxy.cmd"],
+      "oracles": {"native_state": ["/usr/bin/ssh", "-T", "-o", "BatchMode=yes", "gui-windows", "C:/gui/oracle.cmd"]},
+      "environment": {"HOME": "/Users/operator"}
+    },
+    "linux": {
+      "resource": "REPLACE_WITH_LINUX_VM_UUID",
+      "identity": {"REPLACE_WITH_OBSERVED_IDENTITY": true},
+      "reset": ["/absolute/host/python3", "-m", "gui_gate.utm", "reset", "--descriptor", "/absolute/host/manifests/linux.json"],
+      "verify": ["/absolute/host/python3", "-m", "gui_gate.utm", "verify", "--descriptor", "/absolute/host/manifests/linux.json"],
+      "destroy": ["/absolute/host/python3", "-m", "gui_gate.utm", "destroy", "--descriptor", "/absolute/host/manifests/linux.json"],
+      "mcp": ["/usr/bin/ssh", "-T", "-o", "BatchMode=yes", "gui-linux", "/home/gui/proxy.sh"],
+      "oracles": {"native_state": ["/usr/bin/ssh", "-T", "-o", "BatchMode=yes", "gui-linux", "/home/gui/oracle.sh"]},
+      "environment": {"HOME": "/Users/operator"}
+    }
+  }
+}

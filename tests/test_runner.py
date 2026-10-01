@@ -55,6 +55,10 @@ class GuiGateTests(unittest.TestCase):
             self.assertTrue(summary['passed'], summary)
             self.assertEqual(len(summary['runs']), 2)
             for index in range(2):
+                reports = summary['runs'][index]
+                self.assertTrue(all(r['all_desktops_synchronized'] is True for r in reports))
+                self.assertLess(max(r['desktop_ready_monotonic_ns'] for r in reports),
+                                min(r['desktop_finished_monotonic_ns'] for r in reports))
                 for name in gate.TARGETS:
                     evidence = directory / f'run-{index:04d}' / name
                     report = json.loads((evidence / 'report.json').read_text())
@@ -72,6 +76,15 @@ class GuiGateTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp, mock.patch.object(gate, 'run_target', side_effect=synchronized):
             _, summary = gate.run(config(), scenario(), Path(tmp), 1)
             self.assertTrue(summary['passed'], summary)
+
+    def test_failed_desktop_synchronization_is_not_a_green_campaign(self):
+        broken = mock.Mock()
+        broken.wait.side_effect = threading.BrokenBarrierError()
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.object(gate.threading, 'Barrier', return_value=broken):
+            _, summary = gate.run(config(), scenario(), Path(tmp), 1)
+            self.assertFalse(summary['passed'])
+            self.assertTrue(all(r['passed'] for r in summary['runs'][0]))
+            self.assertTrue(all(r['all_desktops_synchronized'] is False for r in summary['runs'][0]))
 
     def test_identity_mismatch_fails_closed_and_cleans_up(self):
         cfg = config()

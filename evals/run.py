@@ -102,6 +102,7 @@ def evaluate(output):
     evaluated = [ROOT / 'extension.py', ROOT / 'extension.toml']
     for directory in ('gui_gate', 'evals', 'tests', 'vendor/octet_extension'):
         evaluated.extend(sorted((ROOT / directory).glob('*.py')))
+    evaluated.extend(sorted((ROOT / 'examples').glob('*.json')))
     evaluated.append(DATASET)
     evaluated.append(ROOT / '.github/workflows/tests.yml')
     hashes = {str(p.relative_to(ROOT)).replace('\\', '/'): hashlib.sha256(p.read_bytes()).hexdigest() for p in evaluated}

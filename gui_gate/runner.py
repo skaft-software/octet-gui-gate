@@ -11,10 +11,13 @@ from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import json
 import math
+import os
+import platform
 import re
 from pathlib import Path
 import subprocess
 import sys
+import threading
 import time
 import uuid
 
@@ -103,6 +106,11 @@ def validate(config, scenario):
     timeout = config.get("timeout_seconds", 120)
     if type(timeout) not in (int, float) or not math.isfinite(timeout) or timeout <= 0:
         raise ValueError("timeout_seconds must be finite and positive")
+    budgets = config.get('acceptance', {})
+    if not isinstance(budgets, dict) or set(budgets) - {'max_wave_seconds', 'max_reset_seconds', 'max_campaign_seconds'}:
+        raise ValueError('unsupported acceptance budget')
+    if any(type(value) not in (int, float) or not math.isfinite(value) or value <= 0 for value in budgets.values()):
+        raise ValueError('acceptance budgets must be finite positive numbers')
     resources = []
     for target in config["targets"].values():
         if not isinstance(target, dict):
@@ -116,6 +124,11 @@ def validate(config, scenario):
             raise ValueError("a pinned permission identity is required")
         if not isinstance(target.get("bindings", {}), dict):
             raise ValueError("bindings must be an object")
+        oracles = target.get('oracles', {})
+        if not isinstance(oracles, dict) or any(not isinstance(k, str) or not k for k in oracles):
+            raise ValueError('oracles must map nonempty names to argv arrays')
+        for command in oracles.values():
+            argv(command)
         environment = target.get("environment", {})
         if not isinstance(environment, dict) or any(not isinstance(k, str) or not k or "=" in k or "\0" in k or not isinstance(v, str) or "\0" in v for k, v in environment.items()):
             raise ValueError("environment must map valid names to string values")
@@ -131,8 +144,16 @@ def validate(config, scenario):
         if not isinstance(step["id"], str) or not step["id"] or step["id"] in names:
             raise ValueError("step IDs must be nonempty and unique")
         names.add(step["id"])
-        if not isinstance(step["tool"], str) or not step["tool"]:
-            raise ValueError("each step requires a tool")
+        if ('tool' in step) == ('oracle' in step):
+            raise ValueError('each step requires exactly one tool or application oracle')
+        if 'tool' in step:
+            if not isinstance(step['tool'], str) or not step['tool']:
+                raise ValueError('each tool step requires a tool name')
+        else:
+            if not isinstance(step['oracle'], str) or not step['oracle']:
+                raise ValueError('each oracle step requires an oracle name')
+            if any(step['oracle'] not in target.get('oracles', {}) for target in config['targets'].values()):
+                raise ValueError('oracle must be configured on every target')
         for check in step.get("assert", []):
             if not isinstance(check, dict):
                 raise ValueError("assertions must be objects")
@@ -141,17 +162,23 @@ def validate(config, scenario):
             validate_pointer(check["path"])
             if "value" not in check:
                 raise ValueError("assertions require a value")
+    if not any('tool' in step for step in steps):
+        raise ValueError('native GUI scenarios require at least one driver tool')
 
 
 def save(path, value):
     path.write_text(json.dumps(value, indent=2, ensure_ascii=False, allow_nan=False) + "\n", encoding="utf-8")
 
 
-def hook(command, directory, phase, timeout):
+def hook(command, directory, phase, timeout, owner=None, input_payload=None):
     # Files retain diagnostics and avoid buffering arbitrary hook output in RAM.
     with (directory / f"{phase}.stdout").open("wb") as out, (directory / f"{phase}.stderr").open("wb") as err:
         started = time.monotonic()
-        result = subprocess.run(argv(command), stdout=out, stderr=err, timeout=timeout, check=False)
+        environment = os.environ.copy()
+        if owner is not None:
+            environment['OCTET_GUI_GATE_OWNER'] = owner
+        result = subprocess.run(argv(command), input=input_payload, stdout=out, stderr=err,
+                                timeout=timeout, check=False, env=environment)
     if result.returncode:
         raise RuntimeError(f"{phase} exited {result.returncode}")
     return time.monotonic() - started
@@ -162,16 +189,18 @@ def check_cancelled(cancel_file):
         raise RuntimeError("campaign cancelled; cleanup still required")
 
 
-def run_target(name, target, scenario, directory, timeout, cancel_file=None):
+def run_target(name, target, scenario, directory, timeout, cancel_file=None, desktop_barrier=None):
     directory.mkdir(mode=0o700)
-    report = {"target": name, "resource": target["resource"], "passed": False, "steps": [], "timings_seconds": {}}
+    owner = uuid.uuid4().hex
+    report = {"target": name, "resource": target["resource"], "lease_owner": owner, "passed": False,
+              "steps": [], "timings_seconds": {}, "started_monotonic_ns": time.monotonic_ns()}
     started = time.monotonic()
     client = None
     try:
         check_cancelled(cancel_file)
-        report["timings_seconds"]["reset"] = hook(target["reset"], directory, "reset", timeout)
+        report["timings_seconds"]["reset"] = hook(target["reset"], directory, "reset", timeout, owner)
         check_cancelled(cancel_file)
-        report["timings_seconds"]["verify"] = hook(target["verify"], directory, "verify", timeout)
+        report["timings_seconds"]["verify"] = hook(target["verify"], directory, "verify", timeout, owner)
         proof = json.loads((directory / "verify.stdout").read_text(encoding="utf-8"))
         json.dumps(proof, allow_nan=False)
         if proof.get("os") != name or not json_equal(proof.get("identity"), target["identity"]):
@@ -185,32 +214,57 @@ def run_target(name, target, scenario, directory, timeout, cancel_file=None):
         client.start(timeout=timeout)
         report["timings_seconds"]["connect"] = time.monotonic() - connect
         tools = {t.name for t in client.tools()}
-        missing = {step["tool"] for step in scenario["steps"]} - tools
+        missing = {step['tool'] for step in scenario['steps'] if 'tool' in step} - tools
         if missing:
             raise RuntimeError(f"guest lacks scenario tools: {sorted(missing)}")
-        context = {"bindings": target.get("bindings", {}), "results": {}, "run_id": directory.parent.parent.name + "/" + directory.parent.name}
+        report['desktop_ready_monotonic_ns'] = time.monotonic_ns()
+        if desktop_barrier is not None:
+            try:
+                desktop_barrier.wait(timeout=timeout)
+                report['all_desktops_synchronized'] = True
+            except threading.BrokenBarrierError:
+                # A failed target cannot make the campaign green, but other
+                # authorized targets still produce their independent evidence.
+                report['all_desktops_synchronized'] = False
+        check_cancelled(cancel_file)
+        context = {"bindings": target.get("bindings", {}), "guest": proof, "results": {},
+                   "run_id": directory.parent.parent.name + "/" + directory.parent.name}
         for index, step in enumerate(scenario["steps"]):
             check_cancelled(cancel_file)
-            entry = {"id": step["id"], "tool": step["tool"], "passed": False}
+            kind = 'tool' if 'tool' in step else 'oracle'
+            entry = {"id": step["id"], kind: step[kind], "passed": False,
+                     "started_monotonic_ns": time.monotonic_ns()}
             report["steps"].append(entry)
             step_start = time.monotonic()
             arguments = resolve(step.get("arguments", {}), context)
-            result = client.call(step["tool"], arguments, timeout=timeout)
+            if kind == 'tool':
+                result = client.call(step['tool'], arguments, timeout=timeout)
+            else:
+                phase = f'oracle-{index:03d}'
+                hook(target['oracles'][step['oracle']], directory, phase, timeout, owner,
+                     json.dumps(arguments, allow_nan=False).encode('utf-8'))
+                result = json.loads((directory / f'{phase}.stdout').read_text(encoding='utf-8'))
+                if not isinstance(result, dict):
+                    raise ValueError('oracle must return a JSON result object')
             evidence = f"step-{index:03d}.json"
             save(directory / evidence, {"arguments": arguments, "result": result})
             entry["evidence"] = evidence
             entry["sha256"] = hashlib.sha256((directory / evidence).read_bytes()).hexdigest()
             entry["seconds"] = time.monotonic() - step_start
+            entry['finished_monotonic_ns'] = time.monotonic_ns()
             if result.get("isError") or result.get("is_error"):
-                raise RuntimeError(f"tool failed: {step['tool']}")
+                raise RuntimeError(f'{kind} failed: {step[kind]}')
             for check in step.get("assert", []):
                 assert_evidence(check, result, context)
             context["results"][step["id"]] = result
             entry["passed"] = True
+        report['desktop_finished_monotonic_ns'] = time.monotonic_ns()
         report["passed"] = True
     except Exception as error:
         report["error"] = f"{type(error).__name__}: {error}"
     finally:
+        if desktop_barrier is not None and 'all_desktops_synchronized' not in report:
+            desktop_barrier.abort()
         try:
             if client is not None:
                 client.close()
@@ -218,11 +272,12 @@ def run_target(name, target, scenario, directory, timeout, cancel_file=None):
             report["passed"] = False
             report["close_error"] = str(error)
         try:
-            report["timings_seconds"]["destroy"] = hook(target["destroy"], directory, "destroy", timeout)
+            report["timings_seconds"]["destroy"] = hook(target["destroy"], directory, "destroy", timeout, owner)
         except Exception as error:
             report["passed"] = False
             report["cleanup_error"] = str(error)
         report["timings_seconds"]["total"] = time.monotonic() - started
+        report["finished_monotonic_ns"] = time.monotonic_ns()
         save(directory / "report.json", report)
     return report
 
@@ -231,11 +286,16 @@ def run(config, scenario, output, repetitions, cancel_file=None):
     validate(config, scenario)
     if type(repetitions) is not int or repetitions < 1:
         raise ValueError("repetitions must be positive")
+    campaign_started = time.monotonic()
     campaign = output / (time.strftime("%Y%m%dT%H%M%S") + "-" + uuid.uuid4().hex)
     campaign.mkdir(parents=True, mode=0o700)
     save(campaign / "config.json", config)
     save(campaign / "scenario.json", scenario)
-    summary = {"schema": "octet.gui-gate.v1", "passed": True, "runs": []}
+    summary = {"schema": "octet.gui-gate.v1", "passed": True, "runs": [],
+               "requested_repetitions": repetitions,
+               "host": {"os": platform.system(), "architecture": platform.machine(), "python": platform.python_version()},
+               "config_sha256": hashlib.sha256((campaign / 'config.json').read_bytes()).hexdigest(),
+               "scenario_sha256": hashlib.sha256((campaign / 'scenario.json').read_bytes()).hexdigest()}
     # One worker per OS: at most one macOS guest, never multiple runs per guest.
     with ThreadPoolExecutor(max_workers=3) as pool:
         for index in range(repetitions):
@@ -246,10 +306,13 @@ def run(config, scenario, output, repetitions, cancel_file=None):
                 break
             iteration = campaign / f"run-{index:04d}"
             iteration.mkdir(mode=0o700)
-            futures = [pool.submit(run_target, name, config["targets"][name], scenario, iteration / name, config.get("timeout_seconds", 120), cancel_file) for name in TARGETS]
+            desktop_barrier = threading.Barrier(3)
+            futures = [pool.submit(run_target, name, config["targets"][name], scenario, iteration / name,
+                                   config.get("timeout_seconds", 120), cancel_file, desktop_barrier) for name in TARGETS]
             reports = [f.result() for f in futures]
             summary["runs"].append(reports)
-            summary["passed"] = summary["passed"] and all(r["passed"] for r in reports)
+            summary["passed"] = (summary["passed"] and all(r["passed"] for r in reports)
+                                 and all(r.get('all_desktops_synchronized') is True for r in reports))
             if cancel_file is not None and cancel_file.exists():
                 summary["passed"] = False
                 summary["cancelled"] = True
@@ -257,6 +320,8 @@ def run(config, scenario, output, repetitions, cancel_file=None):
             # A failed cleanup leaves ownership uncertain: do not reset again.
             if any("cleanup_error" in r or "close_error" in r for r in reports):
                 break
+    summary['campaign_seconds'] = time.monotonic() - campaign_started
+    save(campaign / 'summary.json', summary)
     return campaign, summary
 
 

@@ -94,14 +94,17 @@ class JobTests(unittest.TestCase):
             cfg = config()['targets']['windows']
             original = runner.hook
             phases = []
-            def cancel_reset(command, directory, phase, timeout):
+            owners = []
+            def cancel_reset(command, directory, phase, timeout, owner):
+                owners.append(owner)
                 phases.append(phase)
                 if phase == 'reset': cancel.touch()
-                return original(command, directory, phase, timeout)
+                return original(command, directory, phase, timeout, owner)
             with mock.patch.object(runner, 'hook', side_effect=cancel_reset):
                 report = runner.run_target('windows', cfg, scenario(), Path(tmp) / 'windows', 10, cancel)
             self.assertFalse(report['passed'])
             self.assertEqual(phases, ['reset', 'destroy'])
+            self.assertEqual(owners, [report['lease_owner'], report['lease_owner']])
 
     def test_shutdown_requests_cleanup_not_process_kill(self):
         with tempfile.TemporaryDirectory() as tmp:

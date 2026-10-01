@@ -1,0 +1,11 @@
+{
+  "utmctl": "/Applications/UTM.app/Contents/MacOS/utmctl",
+  "utmctl_sha256": "REPLACE_WITH_OBSERVED_UTMCTL_SHA256",
+  "vm_uuid": "REPLACE_WITH_WINDOWS_VM_UUID",
+  "snapshot_uuid": "REPLACE_WITH_PRISTINE_CHECKPOINT_UUID",
+  "os": "windows",
+  "identity": {"REPLACE_WITH_OBSERVED_IDENTITY": true},
+  "probe": ["/usr/bin/ssh", "-T", "-o", "BatchMode=yes", "gui-windows", "C:/gui/probe.cmd"],
+  "timeout_seconds": 90,
+  "require_running_state": true
+}

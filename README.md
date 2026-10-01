@@ -9,10 +9,11 @@ guests concurrently using Cua Driver's stdio MCP protocol. Records machine
 assertions, raw evidence, SHA-256 hashes, guest identity checks, lifecycle logs,
 and timings. No hosted service or model is required.
 
-**It does not create VMs.** You must supply qualified reset/verification/cleanup
-adapters and prepared, pre-authorized disposable guests. Snapshot speed, Windows
-licensing, live GUI parity, and consent persistence have not been qualified.
-The automated tests use synthetic MCP processes, not real desktops.
+**VM preparation is attended and operator-owned.** A lease-fenced
+[UTM checkpoint adapter and guest recipe](docs/utm.md), native calibration app,
+and independent campaign auditor are included. They have implementation tests,
+**not live VM qualification**. Snapshot speed, Windows licensing, device rollback,
+live GUI parity, and rebuilt-guest consent persistence remain unqualified.
 
 ## Install locally in Octet
 
@@ -38,8 +39,10 @@ release catalog. Pin a reviewed commit for repeatable installation.
 ## Use from Octet
 
 Prepare `targets.json` and `scenario.json` using the
-[adapter contract and target qualification guide](docs/targets.md). The guide's
-commands and identities are placeholders; no ready-to-run VM adapter is bundled.
+[adapter contract](docs/targets.md) or [UTM preparation guide](docs/utm.md).
+The bundled [native calibration scenario](examples/native-probe.scenario.json)
+works through observed guest window bindings and independent app state; guest
+paths, observed identities, and checkpoints still require actual preparation.
 
 ```text
 /gui-gate run /absolute/path/targets.json /absolute/path/scenario.json 20
@@ -83,7 +86,8 @@ python3 -m gui_gate.runner --config targets.json --scenario scenario.json \
   --output gui-evidence --repetitions 20 --allow-disposable-guests
 ```
 
-Exit 0 requires every requested run on all three targets to pass. CLI authorization
+Exit 0 requires every requested run on all three targets to pass and all three
+desktops to reach the readiness barrier. CLI authorization
 replaces the Octet workflow confirmation; neither path grants OS permissions.
 There are no cloud or hosted-capacity dependencies in the harness. GitHub Actions
 runs only synthetic unit tests and does not qualify live GUI behavior.
@@ -107,13 +111,20 @@ evidence supports—and what remains missing.
 Tests cover real synthetic stdio connections, three-worker concurrency, repeated
 runs, evidence retention, fail-closed identity/permission checks, cleanup failure,
 workflow confirmation, extension protocol initialization, background jobs,
-restart inspection, and cooperative cancellation.
+restart inspection, and cooperative cancellation. Additional tests exercise UTM
+lease fencing and recovery, Windows native SID/session readout, macOS signature/
+daemon-attributed grants, fresh interactive challenges, external app oracles,
+and 29 negative calibration-auditor controls. No test here substitutes for a
+live three-guest run.
 
-Outstanding acceptance work: local VM adapters and reproducible golden recipes,
-a valid Windows entitlement, application scenarios, actual rollback/permission
-persistence checks, and a live concurrent three-OS campaign with measured repeat
-cost. ARM64 Windows under QEMU/HVF is a route to **qualify**, not a guarantee of
-native x64 application coverage or an enduring free Windows license.
+Outstanding acceptance work: qualify the backend and recorded rebuild recipes
+on the actual laptop, establish a valid Windows entitlement, qualify the intended
+application, prove coupled device rollback/permission persistence, and retain a
+live concurrent three-OS campaign with measured resource use and repeat cost.
+The calibration auditor always reports `product_qualified:false`; it is not a
+full release validator. ARM64 Windows under QEMU/HVF is a route to **qualify**,
+not a guarantee of native x64 application coverage or an enduring free Windows
+license.
 
 See [LICENSE](LICENSE), [third-party notices](THIRD_PARTY_NOTICES.md), and
 [security boundaries](SECURITY.md).
