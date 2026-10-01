@@ -6,3 +6,4 @@ gui-evidence/
 *.egg-info/
 targets.json
 scenario.json
+eval-artifacts/

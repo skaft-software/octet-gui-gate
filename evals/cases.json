@@ -1,0 +1,23 @@
+[
+  {"id":"repeatable-golden-loop", "requirements":["R1","R3","R4"], "fault":"none", "target":"windows", "repetitions":20, "expected_green":true},
+  {"id":"three-process-overlap", "requirements":["R5"], "fault":"overlap", "target":"all", "repetitions":1, "expected_green":true},
+  {"id":"changed-permission-identity", "requirements":["R6"], "fault":"identity_changed", "target":"each", "expected_green":false, "no_tool_calls":true},
+  {"id":"boolean-is-not-numeric-identity", "requirements":["R6"], "fault":"boolean_identity", "target":"windows", "expected_green":false, "no_tool_calls":true},
+  {"id":"owner-denied-permissions", "requirements":["C4"], "fault":"permission_denied", "target":"each", "expected_green":false, "no_tool_calls":true},
+  {"id":"session0-not-desktop", "requirements":["R2"], "fault":"session0", "target":"each", "expected_green":false, "no_tool_calls":true},
+  {"id":"wrong-operating-system", "requirements":["R1"], "fault":"wrong_os", "target":"windows", "expected_green":false, "no_tool_calls":true},
+  {"id":"malformed-verification", "requirements":["R6"], "fault":"bad_verify_json", "target":"each", "expected_green":false, "no_tool_calls":true},
+  {"id":"missing-required-tool", "requirements":["R1"], "fault":"missing_tool", "target":"each", "expected_green":false, "no_tool_calls":true},
+  {"id":"empty-accessibility-evidence", "requirements":["R3"], "fault":"empty_tree", "target":"each", "expected_green":false},
+  {"id":"screenshot-is-not-task-proof", "requirements":["R3"], "fault":"screenshot_only", "target":"each", "expected_green":false},
+  {"id":"successful-call-without-side-effect", "requirements":["R3"], "fault":"false_ack", "target":"each", "expected_green":false},
+  {"id":"unicode-fidelity", "requirements":["R3"], "fault":"unicode_corruption", "target":"each", "expected_green":false},
+  {"id":"tool-reported-failure", "requirements":["R3"], "fault":"tool_error", "target":"each", "expected_green":false},
+  {"id":"rpc-failure", "requirements":["R3"], "fault":"rpc_error", "target":"each", "expected_green":false},
+  {"id":"transport-disconnect", "requirements":["R3"], "fault":"transport_closed", "target":"each", "expected_green":false},
+  {"id":"reset-failure", "requirements":["R4"], "fault":"reset_error", "target":"each", "expected_green":false, "no_tool_calls":true},
+  {"id":"rollback-retains-prior-marker", "requirements":["R4"], "fault":"stale_reset", "target":"each", "repetitions":2, "expected_green":false},
+  {"id":"cleanup-failure-stops-retry", "requirements":["R4"], "fault":"cleanup_error", "target":"each", "repetitions":3, "completed_repetitions":1, "expected_green":false},
+  {"id":"notifications-cannot-hide-timeout", "requirements":["R3"], "fault":"notification_timeout", "target":"windows", "timeout_seconds":1, "expected_green":false},
+  {"id":"reset-timeout-cleanup", "requirements":["R4"], "fault":"reset_timeout", "target":"windows", "timeout_seconds":1, "expected_green":false, "no_tool_calls":true}
+]

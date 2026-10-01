@@ -2,7 +2,7 @@
 """Opt-in native GUI gate against three operator-owned, disposable guests.
 
 Configuration and scenarios are trusted executable inputs. This is a harness,
-not a VM manager or an OS permission installer. See docs/testing/gui-gate.md.
+not a VM manager or an OS permission installer. See docs/targets.md.
 """
 from __future__ import annotations
 
@@ -11,6 +11,7 @@ from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import json
 import math
+import re
 from pathlib import Path
 import subprocess
 import sys
@@ -28,12 +29,21 @@ def argv(value):
     return value
 
 
+def json_equal(left, right):
+    """Compare JSON values without Python's bool/int equality coercion."""
+    return json.dumps(left, sort_keys=True, allow_nan=False) == json.dumps(right, sort_keys=True, allow_nan=False)
+
+
+def validate_pointer(path):
+    if not isinstance(path, str) or (path and not path.startswith("/")) or re.search(r"~(?![01])", path):
+        raise ValueError("expected a valid JSON Pointer")
+
+
 def pointer(value, path):
     """Strict JSON Pointer lookup; missing evidence is always a failure."""
+    validate_pointer(path)
     if path == "":
         return value
-    if not isinstance(path, str) or not path.startswith("/"):
-        raise ValueError("expected a JSON Pointer")
     for part in path[1:].split("/"):
         part = part.replace("~1", "/").replace("~0", "~")
         if isinstance(value, list):
@@ -60,11 +70,16 @@ def assert_evidence(check, result, context):
     expected = resolve(check["value"], context)
     op = check["op"]
     if op == "equals":
-        passed = json.dumps(actual, sort_keys=True) == json.dumps(expected, sort_keys=True)
+        passed = json_equal(actual, expected)
     elif op == "contains":
         if not isinstance(actual, (str, list, dict)):
             raise ValueError("contains requires text, array, or object evidence")
-        passed = expected in actual
+        if isinstance(actual, list):
+            passed = any(json_equal(item, expected) for item in actual)
+        else:
+            if not isinstance(expected, str):
+                raise ValueError("text/object contains requires a string value")
+            passed = expected in actual
     elif op == "length_at_least":
         if type(expected) is not int or expected < 1 or not isinstance(actual, (str, list, dict)):
             raise ValueError("length_at_least requires a positive integer and collection evidence")
@@ -76,15 +91,22 @@ def assert_evidence(check, result, context):
 
 
 def validate(config, scenario):
-    if config.get("version") != 1 or scenario.get("version") != 1:
-        raise ValueError("configuration and scenario version must be 1")
-    if set(config["targets"]) != set(TARGETS):
+    if not isinstance(config, dict) or not isinstance(scenario, dict):
+        raise ValueError("configuration and scenario must be objects")
+    if type(config.get("version")) is not int or type(scenario.get("version")) is not int or config["version"] != 1 or scenario["version"] != 1:
+        raise ValueError("configuration and scenario version must be integer 1")
+    # Reject non-JSON numerical values before any lifecycle command dispatch.
+    json.dumps(config, allow_nan=False)
+    json.dumps(scenario, allow_nan=False)
+    if not isinstance(config["targets"], dict) or set(config["targets"]) != set(TARGETS):
         raise ValueError("exactly macos, windows, and linux targets are required")
     timeout = config.get("timeout_seconds", 120)
     if type(timeout) not in (int, float) or not math.isfinite(timeout) or timeout <= 0:
         raise ValueError("timeout_seconds must be finite and positive")
     resources = []
     for target in config["targets"].values():
+        if not isinstance(target, dict):
+            raise ValueError("each target must be an object")
         resources.append(target["resource"])
         if not isinstance(target["resource"], str) or not target["resource"]:
             raise ValueError("each guest must have a resource name")
@@ -92,29 +114,37 @@ def validate(config, scenario):
             argv(target[key])
         if not isinstance(target["identity"], dict) or not target["identity"]:
             raise ValueError("a pinned permission identity is required")
+        if not isinstance(target.get("bindings", {}), dict):
+            raise ValueError("bindings must be an object")
+        environment = target.get("environment", {})
+        if not isinstance(environment, dict) or any(not isinstance(k, str) or not k or "=" in k or "\0" in k or not isinstance(v, str) or "\0" in v for k, v in environment.items()):
+            raise ValueError("environment must map valid names to string values")
     if len(set(resources)) != 3:
         raise ValueError("concurrent targets must own distinct guests")
     steps = scenario["steps"]
-    if not isinstance(steps, list) or not steps or not any(s.get("assert") for s in steps):
+    if not isinstance(steps, list) or not steps or any(not isinstance(s, dict) for s in steps) or not any(s.get("assert") for s in steps):
         raise ValueError("scenario requires at least one machine assertion")
     names = set()
     for step in steps:
+        if not isinstance(step.get("arguments", {}), dict) or not isinstance(step.get("assert", []), list):
+            raise ValueError("step arguments must be an object and assert must be an array")
         if not isinstance(step["id"], str) or not step["id"] or step["id"] in names:
             raise ValueError("step IDs must be nonempty and unique")
         names.add(step["id"])
         if not isinstance(step["tool"], str) or not step["tool"]:
             raise ValueError("each step requires a tool")
         for check in step.get("assert", []):
+            if not isinstance(check, dict):
+                raise ValueError("assertions must be objects")
             if check["op"] not in ("equals", "contains", "length_at_least"):
                 raise ValueError("unsupported assertion operator")
-            if not isinstance(check["path"], str) or (check["path"] and not check["path"].startswith("/")):
-                raise ValueError("assertion paths must be JSON Pointers")
+            validate_pointer(check["path"])
             if "value" not in check:
                 raise ValueError("assertions require a value")
 
 
 def save(path, value):
-    path.write_text(json.dumps(value, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    path.write_text(json.dumps(value, indent=2, ensure_ascii=False, allow_nan=False) + "\n", encoding="utf-8")
 
 
 def hook(command, directory, phase, timeout):
@@ -143,7 +173,8 @@ def run_target(name, target, scenario, directory, timeout, cancel_file=None):
         check_cancelled(cancel_file)
         report["timings_seconds"]["verify"] = hook(target["verify"], directory, "verify", timeout)
         proof = json.loads((directory / "verify.stdout").read_text(encoding="utf-8"))
-        if proof.get("os") != name or proof.get("identity") != target["identity"]:
+        json.dumps(proof, allow_nan=False)
+        if proof.get("os") != name or not json_equal(proof.get("identity"), target["identity"]):
             raise RuntimeError("guest OS or permission identity differs from pinned identity")
         if proof.get("permissions_ready") is not True or proof.get("interactive_desktop") is not True:
             raise RuntimeError("guest has no authorized, interactive desktop")

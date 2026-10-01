@@ -1,0 +1,40 @@
+{
+  "schema": "octet.gui-gate.evaluation.v1",
+  "kind": "synthetic-contract",
+  "host": {
+    "os": "Windows",
+    "architecture": "AMD64",
+    "python": "3.14.4"
+  },
+  "revision": "1280188509b7cb7f3945ada05366112bb5235e42",
+  "worktree_dirty": true,
+  "dataset_sha256": "09f63f287311cdfaef8cf333280fb5d3a7f3b1500d4819886216569f89121847",
+  "metrics": {
+    "cases": 51,
+    "passed": 50,
+    "false_greens": 1,
+    "negative_cases": 49,
+    "synthetic_wave_p50_seconds": 0.1358120999939274,
+    "synthetic_wave_p95_seconds": 0.14613440001267008
+  },
+  "scope": "Initial 51-case fault-injection evaluation, before the identity equality fix and before adding boundary/wire cases.",
+  "failing_cases": [
+    {
+      "id": "boolean-is-not-numeric-identity:windows",
+      "checks": [
+        {
+          "check": "exact-expected-campaign-outcome",
+          "passed": false
+        },
+        {
+          "check": "0:windows:expected-target-outcome",
+          "passed": false
+        },
+        {
+          "check": "windows:zero-tools-after-preflight-failure",
+          "passed": false
+        }
+      ]
+    }
+  ]
+}

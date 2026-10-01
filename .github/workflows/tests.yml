@@ -1,7 +1,13 @@
-name: Synthetic extension tests
+name: Synthetic tests and requirement evaluations
 on:
   push:
   pull_request:
+  workflow_dispatch:
+    inputs:
+      require_product:
+        description: 'Require live product qualification (currently blocked)'
+        type: boolean
+        default: false
 permissions:
   contents: read
 jobs:
@@ -18,3 +24,13 @@ jobs:
           python-version: '3.10'
       - name: Unit and synthetic MCP tests (no live desktops)
         run: python -m unittest discover -s tests -p "test_*.py"
+      - name: Requirement evaluations (no live desktops)
+        run: python -m evals.run --output eval-artifacts ${{ inputs.require_product && '--require-product' || '' }}
+      - name: Retain evaluation evidence even on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: synthetic-evaluation-${{ matrix.os }}
+          path: eval-artifacts/
+          if-no-files-found: warn
+          retention-days: 14

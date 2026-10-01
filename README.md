@@ -92,7 +92,17 @@ runs only synthetic unit tests and does not qualify live GUI behavior.
 
 ```sh
 python3 -m unittest discover -s tests -p 'test_*.py'
+python3 -m evals.run --output eval-artifacts
 ```
+
+The [evaluation policy](docs/evaluation.md) defines 80 code-graded contract
+cases, independent state oracles, actual extension-protocol workflows, and a
+requirement coverage matrix. Reports fingerprint the exact evaluated sources.
+CI runs these evals and retains their artifacts; this is still **synthetic**
+qualification. `--require-product` deliberately fails until live acceptance
+exists. Do not publish a qualified release merely because synthetic CI is green.
+See the [implementation defense](docs/implementation-defense.md) for what the
+evidence supports—and what remains missing.
 
 Tests cover real synthetic stdio connections, three-worker concurrency, repeated
 runs, evidence retention, fail-closed identity/permission checks, cleanup failure,
